@@ -28,7 +28,14 @@ struct EditCards: View {
                 
                 Section("All cards") {
                     ForEach(cards) { card in
-                        Text(card.promp)
+                        VStack(alignment: .leading) {
+                            Text(card.promp)
+                                .font(.title)
+                            
+                            Text(card.answer)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
                     }
                     .onDelete(perform: remove(atOffsets:))
                 }
@@ -49,8 +56,14 @@ struct EditCards: View {
         guard !trimmedPrompt.isEmpty && !trimmerAnswer.isEmpty else { return }
         
         let card = Card(promp: trimmedPrompt, answer: trimmerAnswer)
-        cards.append(card)
+        withAnimation {
+            cards.insert(card, at: 0)
+        }
+        
         saveCards()
+        
+        prompt = ""
+        answer = ""
     }
     
     private func remove(atOffsets offsets: IndexSet) {
