@@ -10,7 +10,7 @@ import SwiftUI
 struct EditCards: View {
     @Environment(\.dismiss) private var dismiss
     
-    @State private var cards = [Card]()
+    @StateObject private var viewModel = ViewModel()
     
     @State private var prompt = ""
     @State private var answer = ""
@@ -28,7 +28,7 @@ struct EditCards: View {
                 }
                 
                 Section("All cards") {
-                    ForEach(cards) { card in
+                    ForEach(viewModel.cards) { card in
                         VStack(alignment: .leading) {
                             Text(card.prompt)
                                 .font(.title)
@@ -38,38 +38,25 @@ struct EditCards: View {
                                 .foregroundColor(.secondary)
                         }
                     }
-                    .onDelete(perform: remove(atOffsets:))
+                    .onDelete(perform: { viewModel.removeCards(atOffsets: $0) })
                 }
             }
             .toolbar {
                 Button("Done", action: done)
             }
             .onAppear {
-                cards = StorageManager.loadCards()
+                viewModel.loadCards()
             }
         }
     }
     
     private func addCard() {
-        let trimmedPrompt = prompt.trimmingCharacters(in: .whitespaces)
-        let trimmerAnswer = answer.trimmingCharacters(in: .whitespaces)
-        
-        guard !trimmedPrompt.isEmpty && !trimmerAnswer.isEmpty else { return }
-        
-        let card = Card(prompt: trimmedPrompt, answer: trimmerAnswer)
         withAnimation {
-            cards.insert(card, at: 0)
+            viewModel.addCard(prompt: prompt, answer: answer)
         }
-        
-        StorageManager.saveCards(cards)
         
         prompt = ""
         answer = ""
-    }
-    
-    private func remove(atOffsets offsets: IndexSet) {
-        cards.remove(atOffsets: offsets)
-        StorageManager.saveCards(cards)
     }
     
     private func done() {

@@ -11,11 +11,12 @@ import SwiftUI
 extension ContentView {
     @MainActor final class ViewModel: ObservableObject {
         private let timer = Timer.publish(every: 1, on: .main, in: .common)
-        private var cancellables = [AnyCancellable]()
         
-        @Published var cards = [Card]()
-        @Published var timeRemaining = 100
+        private var cancellables = [AnyCancellable]()
         private var isActive = true
+        
+        @Published private(set) var cards = [Card]()
+        @Published private(set) var timeRemaining = 100
         
         init() {
             timer.connect()
