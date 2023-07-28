@@ -13,3 +13,5 @@ As usual, at the end of the guided tutorial there will be three challenges for m
 **Challenge #3**: For a harder challenge: when the users gets an answer wrong, add that card goes back into the array so the user can try it again. Doing this successfully means rethinking the ForEach loop, because relying on simple integers isn’t enough – your cards need to be uniquely identifiable.
 
 **Challenge #4**: Make it use documents JSON rather than UserDefaults – this is generally a good idea, so you should get practice with this.
+
+**Challenge #5**: Try to find a way to centralize the loading and saving code for the cards. You might need to experiment a little to find something you like!

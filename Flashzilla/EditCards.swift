@@ -9,6 +9,8 @@ import SwiftUI
 
 struct EditCards: View {
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var storageManager: StorageManager
+    
     @State private var cards = [Card]()
     
     @State private var prompt = ""
@@ -44,7 +46,7 @@ struct EditCards: View {
                 Button("Done", action: done)
             }
             .onAppear {
-                loadCards()
+                cards = storageManager.loadCards()
             }
         }
     }
@@ -60,7 +62,7 @@ struct EditCards: View {
             cards.insert(card, at: 0)
         }
         
-        saveCards()
+        storageManager.saveCards(cards)
         
         prompt = ""
         answer = ""
@@ -68,25 +70,11 @@ struct EditCards: View {
     
     private func remove(atOffsets offsets: IndexSet) {
         cards.remove(atOffsets: offsets)
-        saveCards()
+        storageManager.saveCards(cards)
     }
     
     private func done() {
         dismiss()
-    }
-    
-    private func saveCards() {
-        if let jsonData = try? JSONEncoder().encode(cards) {
-            try? jsonData.write(to: FileManager.cardsJson)
-        }
-    }
-    
-    private func loadCards() {
-        if let jsonData = try? Data(contentsOf: FileManager.cardsJson) {
-            if let cards = try? JSONDecoder().decode([Card].self, from: jsonData) {
-                self.cards = cards
-            }
-        }
     }
 }
 

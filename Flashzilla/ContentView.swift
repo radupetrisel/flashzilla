@@ -12,6 +12,8 @@ struct ContentView: View {
     @Environment(\.accessibilityDifferentiateWithoutColor) private var differentiateWithoutColor
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
     
+    @EnvironmentObject private var storageManager: StorageManager
+    
     @State private var cards = [Card]()
     @State private var timeRemaning = 100
     @State private var isActive = true
@@ -153,17 +155,9 @@ struct ContentView: View {
     }
     
     private func resetCards() {
-        loadCards()
+        cards = storageManager.loadCards()
         timeRemaning = 100
         isActive = true
-    }
-    
-    private func loadCards() {
-        if let jsonData = try? Data(contentsOf: FileManager.cardsJson) {
-            if let cards = try? JSONDecoder().decode([Card].self, from: jsonData) {
-                self.cards = cards.shuffled()
-            }
-        }
     }
 }
 

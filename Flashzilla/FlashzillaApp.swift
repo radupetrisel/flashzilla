@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct FlashzillaApp: App {
+    private let storageManager = StorageManager()
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(storageManager)
         }
     }
 }
