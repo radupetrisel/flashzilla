@@ -22,64 +22,49 @@ struct CardView: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 25, style: .continuous)
-                .fill(differentiateWithoutColor
-                      ? .white
-                      : .white.opacity(1 - Double(abs(offset.width / 50))))
-                .background(differentiateWithoutColor
-                            ? nil
-                            : RoundedRectangle(cornerRadius: 25, style: .continuous)
-                                .fill(by: offset.width)
-                )
+                .fill(cardFill(using: offset, differentiateWithoutColor: differentiateWithoutColor))
+                .background(cardBackground(using: offset, differentiateWithoutColor: differentiateWithoutColor))
                 .shadow(radius: 10)
             
-            VStack {
-                if voiceOverEnabled {
-                    Text(isShowingAnswer ? card.answer : card.prompt)
-                        .font(.largeTitle)
-                        .foregroundColor(.black)
-                } else {
-                    Text(card.prompt)
-                        .font(.largeTitle)
-                        .foregroundColor(.black)
-                    
-                    if isShowingAnswer {
-                        Text(card.answer)
-                            .font(.title)
-                            .foregroundColor(.gray)
-                    }
-                }
-            }
-            .padding()
-            .multilineTextAlignment(.center)
+            cardContent(card, isShowingAnswer: isShowingAnswer, voiceOverEnabled: voiceOverEnabled)
+                .padding()
+                .multilineTextAlignment(.center)
         }
         .frame(width: 450, height: 250)
         .rotationEffect(.degrees(Double(offset.width / 5)))
         .offset(x: offset.width * 5, y: 0)
-        .opacity(2 - Double(abs(offset.width / 50)))
+        .opacity(cardOpacity(using: offset))
         .onTapGesture {
             isShowingAnswer.toggle()
         }
-        .gesture(DragGesture()
-            .onChanged { gesture in
-                offset = gesture.translation
-                feedbackGenerator.prepare()
-            }
-            .onEnded { _ in
-                if abs(offset.width) > 100 {
-                    if offset.width > 0 {
-                        onDidSwipe?(true)
-                        feedbackGenerator.notificationOccurred(.success)
-                    } else {
-                        feedbackGenerator.notificationOccurred(.error)
-                        onDidSwipe?(false)
-                    }
-                } else {
-                    
-                    offset = .zero
-                }
-            })
+        .gesture(dragGesture)
         .animation(.spring(), value: offset)
         .accessibilityAddTraits(.isButton)
+    }
+    
+    var dragGesture: some Gesture {
+        DragGesture()
+            .onChanged(onDragChanged(_:))
+            .onEnded { _ in onDragEnded()}
+    }
+    
+    private func onDragChanged(_ gesture: DragGesture.Value) {
+        offset = gesture.translation
+        feedbackGenerator.prepare()
+    }
+    
+    private func onDragEnded() {
+        if abs(offset.width) > 100 {
+            if offset.width > 0 {
+                feedbackGenerator.notificationOccurred(.success)
+                onDidSwipe?(true)
+            } else {
+                feedbackGenerator.notificationOccurred(.error)
+                onDidSwipe?(false)
+            }
+        } else {
+            offset = .zero
+        }
     }
 }
 
