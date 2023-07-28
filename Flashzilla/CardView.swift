@@ -28,7 +28,8 @@ struct CardView: View {
                 .background(differentiateWithoutColor
                             ? nil
                             : RoundedRectangle(cornerRadius: 25, style: .continuous)
-                    .fill(offset.width > 0 ? .green : .red))
+                                .fill(by: offset.width)
+                )
                 .shadow(radius: 10)
             
             VStack {
@@ -72,12 +73,27 @@ struct CardView: View {
                     }
                     onRemoval?()
                 } else {
+                    
                     offset = .zero
                 }
             })
         .animation(.spring(), value: offset)
         .accessibilityAddTraits(.isButton)
-        
+    }
+}
+
+extension Shape {
+    func fill(by offset: Double) -> some View{
+        switch offset {
+        case 0:
+            return self.fill(.white)
+        case ..<0:
+            return self.fill(.red)
+        case 0...:
+            return self.fill(.green)
+        default:
+            fatalError("Math was not on your side today.")
+        }
     }
 }
 
