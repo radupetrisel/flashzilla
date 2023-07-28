@@ -29,7 +29,7 @@ struct EditCards: View {
                 Section("All cards") {
                     ForEach(cards) { card in
                         VStack(alignment: .leading) {
-                            Text(card.promp)
+                            Text(card.prompt)
                                 .font(.title)
                             
                             Text(card.answer)
@@ -55,7 +55,7 @@ struct EditCards: View {
         
         guard !trimmedPrompt.isEmpty && !trimmerAnswer.isEmpty else { return }
         
-        let card = Card(promp: trimmedPrompt, answer: trimmerAnswer)
+        let card = Card(prompt: trimmedPrompt, answer: trimmerAnswer)
         withAnimation {
             cards.insert(card, at: 0)
         }

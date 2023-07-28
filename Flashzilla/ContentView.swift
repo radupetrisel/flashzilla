@@ -35,10 +35,12 @@ struct ContentView: View {
                     .clipShape(Capsule())
                 
                 ZStack {
-                    ForEach(0..<cards.count, id: \.self) { index in
-                        CardView(card: cards[index]) {
+                    ForEach(cards) { card in
+                        let index = cards.firstIndex { $0.id == card.id }!
+                        
+                        CardView(card: card) { isCorrect in
                             withAnimation {
-                                remove(cardAt: index)
+                                onSwiped(cardAt: index, isCorrect: isCorrect)
                             }
                         }
                         .stacked(at: index, in: cards.count)
@@ -82,7 +84,7 @@ struct ContentView: View {
                     HStack {
                         Button {
                             withAnimation {
-                                remove(cardAt: cards.count - 1)
+                                onSwiped(cardAt: cards.count - 1, isCorrect: false)
                             }
                         } label: {
                             Image(systemName: "xmark.circle")
@@ -97,7 +99,7 @@ struct ContentView: View {
                         
                         Button {
                             withAnimation {
-                                remove(cardAt: cards.count - 1)
+                                onSwiped(cardAt: cards.count - 1, isCorrect: true)
                             }
                         } label: {
                             Image(systemName: "checkmark.circle")
@@ -134,13 +136,19 @@ struct ContentView: View {
         .onAppear(perform: resetCards)
     }
     
-    private func remove(cardAt index: Int) {
+    private func onSwiped(cardAt index: Int, isCorrect: Bool) {
         guard index >= 0 else { return }
         
-        cards.remove(at: index)
-        
-        if cards.isEmpty {
-            isActive = false
+        if isCorrect {
+            
+            cards.remove(at: index)
+            
+            if cards.isEmpty {
+                isActive = false
+            }
+        } else {
+            let card = cards.remove(at: index)
+            cards.insert(Card(card: card), at: 0)
         }
     }
     

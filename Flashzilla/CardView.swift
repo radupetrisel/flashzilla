@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CardView: View {
     let card: Card
-    var onRemoval: (() -> Void)? = nil
+    var onDidSwipe: ((Bool) -> Void)? = nil
     
     @Environment(\.accessibilityDifferentiateWithoutColor) private var differentiateWithoutColor
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
@@ -34,11 +34,11 @@ struct CardView: View {
             
             VStack {
                 if voiceOverEnabled {
-                    Text(isShowingAnswer ? card.answer : card.promp)
+                    Text(isShowingAnswer ? card.answer : card.prompt)
                         .font(.largeTitle)
                         .foregroundColor(.black)
                 } else {
-                    Text(card.promp)
+                    Text(card.prompt)
                         .font(.largeTitle)
                         .foregroundColor(.black)
                     
@@ -67,11 +67,12 @@ struct CardView: View {
             .onEnded { _ in
                 if abs(offset.width) > 100 {
                     if offset.width > 0 {
+                        onDidSwipe?(true)
                         feedbackGenerator.notificationOccurred(.success)
                     } else {
                         feedbackGenerator.notificationOccurred(.error)
+                        onDidSwipe?(false)
                     }
-                    onRemoval?()
                 } else {
                     
                     offset = .zero

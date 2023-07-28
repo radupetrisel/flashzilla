@@ -9,13 +9,20 @@ import Foundation
 
 struct Card: Identifiable, Codable {
     let id = UUID()
-    let promp: String
+    let prompt: String
     let answer: String
     
-    static let preview = Card(promp: "Who player the 13th Doctor Who in \"Doctor Who\"?", answer: "Jodie Whittaker")
+    static let preview = Card(prompt: "Who player the 13th Doctor Who in \"Doctor Who\"?", answer: "Jodie Whittaker")
     
     enum CodingKeys: CodingKey {
-        case promp
+        case prompt
         case answer
+    }
+}
+
+extension Card {
+    init(card: Card) {
+        self.prompt = card.prompt
+        self.answer = card.answer
     }
 }
