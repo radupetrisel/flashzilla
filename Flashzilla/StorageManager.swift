@@ -7,14 +7,16 @@
 
 import Foundation
 
-final class StorageManager: ObservableObject {
-    func saveCards(_ cards: [Card]) {
+final class StorageManager {
+    private init() { }
+    
+    static func saveCards(_ cards: [Card]) {
         if let jsonData = try? JSONEncoder().encode(cards) {
             try? jsonData.write(to: FileManager.cardsJson, options: [.atomic, .completeFileProtection])
         }
     }
     
-    func loadCards() -> [Card] {
+    static func loadCards() -> [Card] {
         if let jsonData = try? Data(contentsOf: FileManager.cardsJson) {
             if let cards = try? JSONDecoder().decode([Card].self, from: jsonData) {
                 return cards

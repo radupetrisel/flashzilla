@@ -12,14 +12,9 @@ struct ContentView: View {
     @Environment(\.accessibilityDifferentiateWithoutColor) private var differentiateWithoutColor
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
     
-    @EnvironmentObject private var storageManager: StorageManager
-    
-    @State private var cards = [Card]()
-    @State private var timeRemaning = 100
-    @State private var isActive = true
+    @StateObject private var viewModel = ViewModel()
     @State private var isShowingEditScreen = false
-    
-    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
     
     var body: some View {
         ZStack {
@@ -28,7 +23,7 @@ struct ContentView: View {
                 .ignoresSafeArea()
             
             VStack {
-                Text("\(timeRemaning)")
+                Text("\(viewModel.timeRemaining)")
                     .font(.largeTitle)
                     .foregroundColor(.white)
                     .padding(.horizontal, 20)
@@ -37,23 +32,23 @@ struct ContentView: View {
                     .clipShape(Capsule())
                 
                 ZStack {
-                    ForEach(cards) { card in
-                        let index = cards.firstIndex { $0.id == card.id }!
+                    ForEach(viewModel.cards) { card in
+                        let index = viewModel.cards.firstIndex { $0.id == card.id }!
                         
                         CardView(card: card) { isCorrect in
                             withAnimation {
-                                onSwiped(cardAt: index, isCorrect: isCorrect)
+                                viewModel.updateCard(cardAt: index, isCorrect: isCorrect)
                             }
                         }
-                        .stacked(at: index, in: cards.count)
-                        .allowsTightening(index == cards.count - 1)
-                        .accessibilityHidden(index < cards.count - 1)
+                        .stacked(at: index, in: viewModel.cards.count)
+                        .allowsTightening(index == viewModel.cards.count - 1)
+                        .accessibilityHidden(index < viewModel.cards.count - 1)
                     }
                 }
-                .allowsHitTesting(timeRemaning > 0)
+                .allowsHitTesting(viewModel.timeRemaining > 0)
                 
-                if cards.isEmpty {
-                    Button("Start again", action: resetCards)
+                if viewModel.cards.isEmpty {
+                    Button("Start again") { viewModel.resetCards() }
                         .padding()
                         .background(.white)
                         .foregroundColor(.black)
@@ -86,7 +81,7 @@ struct ContentView: View {
                     HStack {
                         Button {
                             withAnimation {
-                                onSwiped(cardAt: cards.count - 1, isCorrect: false)
+                                viewModel.updateLastCard(isCorrect: false)
                             }
                         } label: {
                             Image(systemName: "xmark.circle")
@@ -101,7 +96,7 @@ struct ContentView: View {
                         
                         Button {
                             withAnimation {
-                                onSwiped(cardAt: cards.count - 1, isCorrect: true)
+                                viewModel.updateLastCard(isCorrect: true)
                             }
                         } label: {
                             Image(systemName: "checkmark.circle")
@@ -118,46 +113,9 @@ struct ContentView: View {
                 }
             }
         }
-        .onReceive(timer) { _ in
-            guard isActive else { return }
-            
-            if timeRemaning > 0 {
-                timeRemaning -= 1
-            }
-        }
-        .onChange(of: scenePhase) { newValue in
-            if newValue == .active {
-                if !cards.isEmpty {
-                    isActive = true
-                }
-            } else {
-                isActive = false
-            }
-        }
-        .sheet(isPresented: $isShowingEditScreen, onDismiss: resetCards, content: EditCards.init)
-        .onAppear(perform: resetCards)
-    }
-    
-    private func onSwiped(cardAt index: Int, isCorrect: Bool) {
-        guard index >= 0 else { return }
-        
-        if isCorrect {
-            
-            cards.remove(at: index)
-            
-            if cards.isEmpty {
-                isActive = false
-            }
-        } else {
-            let card = cards.remove(at: index)
-            cards.insert(Card(card: card), at: 0)
-        }
-    }
-    
-    private func resetCards() {
-        cards = storageManager.loadCards()
-        timeRemaning = 100
-        isActive = true
+        .onChange(of: scenePhase, perform: { viewModel.update(scenePhase: $0) })
+        .sheet(isPresented: $isShowingEditScreen, onDismiss: { viewModel.resetCards() }, content: EditCards.init)
+        .onAppear{ viewModel.resetCards() }
     }
 }
 

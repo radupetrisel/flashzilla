@@ -9,7 +9,6 @@ import SwiftUI
 
 struct EditCards: View {
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var storageManager: StorageManager
     
     @State private var cards = [Card]()
     
@@ -46,7 +45,7 @@ struct EditCards: View {
                 Button("Done", action: done)
             }
             .onAppear {
-                cards = storageManager.loadCards()
+                cards = StorageManager.loadCards()
             }
         }
     }
@@ -62,7 +61,7 @@ struct EditCards: View {
             cards.insert(card, at: 0)
         }
         
-        storageManager.saveCards(cards)
+        StorageManager.saveCards(cards)
         
         prompt = ""
         answer = ""
@@ -70,7 +69,7 @@ struct EditCards: View {
     
     private func remove(atOffsets offsets: IndexSet) {
         cards.remove(atOffsets: offsets)
-        storageManager.saveCards(cards)
+        StorageManager.saveCards(cards)
     }
     
     private func done() {
