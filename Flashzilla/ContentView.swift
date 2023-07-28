@@ -12,10 +12,9 @@ struct ContentView: View {
     @Environment(\.accessibilityDifferentiateWithoutColor) private var differentiateWithoutColor
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
     
-    @StateObject private var viewModel = ViewModel()
+    @StateObject var viewModel = ViewModel()
     @State private var isShowingEditScreen = false
 
-    
     var body: some View {
         ZStack {
             Image("background")
@@ -23,94 +22,25 @@ struct ContentView: View {
                 .ignoresSafeArea()
             
             VStack {
-                Text("\(viewModel.timeRemaining)")
-                    .font(.largeTitle)
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 5)
-                    .background(.black.opacity(0.75))
-                    .clipShape(Capsule())
+                timeCapsule()
                 
                 ZStack {
                     ForEach(viewModel.cards) { card in
                         let index = viewModel.cards.firstIndex { $0.id == card.id }!
-                        
-                        CardView(card: card) { isCorrect in
-                            withAnimation {
-                                viewModel.updateCard(cardAt: index, isCorrect: isCorrect)
-                            }
-                        }
-                        .stacked(at: index, in: viewModel.cards.count)
-                        .allowsTightening(index == viewModel.cards.count - 1)
-                        .accessibilityHidden(index < viewModel.cards.count - 1)
+                        stackedCardView(card, at: index)
                     }
                 }
                 .allowsHitTesting(viewModel.timeRemaining > 0)
                 
                 if viewModel.cards.isEmpty {
-                    Button("Start again") { viewModel.resetCards() }
-                        .padding()
-                        .background(.white)
-                        .foregroundColor(.black)
-                        .clipShape(Capsule())
+                    startAgainButton()
                 }
             }
             
-            VStack {
-                HStack {
-                    Spacer()
-                    
-                    Button {
-                        isShowingEditScreen = true
-                    } label: {
-                        Image(systemName: "plus.circle")
-                            .padding()
-                            .background(.black.opacity(0.7))
-                            .clipShape(Circle())
-                    }
-                }
-                
-                Spacer()
-            }
-            .foregroundColor(.white)
-            .padding()
+            editCardsButton { isShowingEditScreen = true }
             
             if differentiateWithoutColor || voiceOverEnabled {
-                VStack {
-                    Spacer()
-                    HStack {
-                        Button {
-                            withAnimation {
-                                viewModel.updateLastCard(isCorrect: false)
-                            }
-                        } label: {
-                            Image(systemName: "xmark.circle")
-                                .padding()
-                                .background(.black.opacity(0.7))
-                                .clipShape(Circle())
-                        }
-                        .accessibilityLabel("Wrong")
-                        .accessibilityHint("Mark your answer as being wrong")
-                        
-                        Spacer()
-                        
-                        Button {
-                            withAnimation {
-                                viewModel.updateLastCard(isCorrect: true)
-                            }
-                        } label: {
-                            Image(systemName: "checkmark.circle")
-                                .padding()
-                                .background(.black.opacity(0.7))
-                                .clipShape(Circle())
-                        }
-                        .accessibilityLabel("Correct")
-                        .accessibilityHint("Mark your answer as being correct")
-                    }
-                    .foregroundColor(.white)
-                    .font(.title)
-                    .padding()
-                }
+                accessiblityButtons()
             }
         }
         .onChange(of: scenePhase, perform: { viewModel.update(scenePhase: $0) })

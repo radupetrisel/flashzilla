@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7C3843812A73DD7E00E268FD /* ContentView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C3843802A73DD7E00E268FD /* ContentView+Extensions.swift */; };
 		7C90B0F92A73A6D400693328 /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C90B0F82A73A6D400693328 /* StorageManager.swift */; };
 		7C90B0FB2A73A80B00693328 /* ContentView-ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C90B0FA2A73A80B00693328 /* ContentView-ViewModel.swift */; };
 		7C96096D2A714572003705E8 /* FlashzillaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C96096C2A714572003705E8 /* FlashzillaApp.swift */; };
@@ -21,6 +22,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7C3843802A73DD7E00E268FD /* ContentView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContentView+Extensions.swift"; sourceTree = "<group>"; };
 		7C90B0F82A73A6D400693328 /* StorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageManager.swift; sourceTree = "<group>"; };
 		7C90B0FA2A73A80B00693328 /* ContentView-ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContentView-ViewModel.swift"; sourceTree = "<group>"; };
 		7C9609692A714572003705E8 /* Flashzilla.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Flashzilla.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -68,6 +70,7 @@
 			children = (
 				7C96096C2A714572003705E8 /* FlashzillaApp.swift */,
 				7C96096E2A714572003705E8 /* ContentView.swift */,
+				7C3843802A73DD7E00E268FD /* ContentView+Extensions.swift */,
 				7CB389642A72A52E0034334A /* CardView.swift */,
 				7CB389682A72D90A0034334A /* EditCards.swift */,
 				7CB389652A72A52E0034334A /* Card.swift */,
@@ -164,6 +167,7 @@
 				7CB3896B2A72DB0E0034334A /* FileManager+Extensions.swift in Sources */,
 				7C90B0F92A73A6D400693328 /* StorageManager.swift in Sources */,
 				7C96096D2A714572003705E8 /* FlashzillaApp.swift in Sources */,
+				7C3843812A73DD7E00E268FD /* ContentView+Extensions.swift in Sources */,
 				7C90B0FB2A73A80B00693328 /* ContentView-ViewModel.swift in Sources */,
 				7CB389692A72D90A0034334A /* EditCards.swift in Sources */,
 				7CB389672A72A52E0034334A /* Card.swift in Sources */,
